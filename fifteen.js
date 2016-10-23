@@ -26,7 +26,6 @@ function main(){
 			"background-position-x":0-x,
 			"background-position-y":+0-y
 		});
-		//$(this).css();	
 		//console.log(getSpace($(this)));
 	});	
 	defSpaces();	
@@ -101,15 +100,15 @@ function movePiece(){
 function move(a,space){
 	if(a.hasClass("movablepiece")){
 		var x = base.left+(98*space[0]);
-		var y = base.top+(98*space[1]);		
+		var y = base.top+(98*space[1]);
 		a.animate({
 			top: y,
 			left: x
-		},"slow");
-		/* a.css({
+		});
+		a.css({
 			"top": y,
 			"left": x
-		}); */
+		});
 		setMovable();
 	}	
 }
