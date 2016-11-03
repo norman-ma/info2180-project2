@@ -23,6 +23,7 @@ function main(){
 			"background-position-x":-x,
 			"background-position-y":-y
 		});
+		
 		if(i<3){
 			i++;
 		}else{
@@ -30,6 +31,7 @@ function main(){
 			j++;
 		}	
 	});
+	
 	$("#shufflebutton").on("click",shuffle);	
 	setMovable();
 }
@@ -65,7 +67,6 @@ function setMovable(){
 			$(this).on("click",movePiece);
 		}		
 	});
-	console.log("run");
 }
 
 function getSpace(el){
@@ -86,32 +87,24 @@ function isAdjacent(a,b){
 }
 
 function movePiece(){
-	var shift = [blankPos[0]-getSpace($(this))[0],blankPos[1]-getSpace($(this))[1]];
-	
-	if(shift.toString()==="1,1" || shift.toString()==="-1,-1" || shift.toString()==="-1,1" || shift.toString()==="1,-1"){
-		setMovable();
-	}else{
-		blankPos = getSpace($(this));
-		move($(this),blankPos,shift);
-		setMovable();
-	}	
+	var shift = [blankPos[0]-getSpace($(this))[0],blankPos[1]-getSpace($(this))[1]];	
+	blankPos = getSpace($(this));
+	move($(this),blankPos,shift);
 }
 
 function move(a,current,shift){
-	if(a.hasClass("movablepiece")){
-		var x = base.left+(98*(current[0]+shift[0]));
-		var y = base.top+(98*(current[1]+shift[1]));
-		
-		a.animate({
-			"top": y,
-			"left": x
-		}); 
-		a.css({
-			"top": y,
-			"left": x
-		});
-	}
-	return setMovable();
+	var x = base.left+(98*(current[0]+shift[0]));
+	var y = base.top+(98*(current[1]+shift[1]));
+	
+	a.animate({
+		"top": y,
+		"left": x
+	},"fast"); 
+	a.css({
+		"top": y,
+		"left": x
+	});
+	a.promise().always(setMovable);
 }
 
 $(document).ready(main);
