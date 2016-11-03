@@ -88,8 +88,12 @@ function isAdjacent(a,b){
 
 function movePiece(){
 	var shift = [blankPos[0]-getSpace($(this))[0],blankPos[1]-getSpace($(this))[1]];	
-	blankPos = getSpace($(this));
-	move($(this),blankPos,shift);
+	if(shift.toString()==="0,1" || shift.toString()==="0,-1" || shift.toString()==="1,0" || shift.toString()==="-1,0"){
+		blankPos = getSpace($(this));
+		move($(this),blankPos,shift);
+	}else{
+		setMovable();
+	}
 }
 
 function move(a,current,shift){
@@ -99,7 +103,7 @@ function move(a,current,shift){
 	a.animate({
 		"top": y,
 		"left": x
-	},"fast"); 
+	},400); 
 	a.css({
 		"top": y,
 		"left": x
