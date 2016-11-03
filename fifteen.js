@@ -1,6 +1,10 @@
+/**
+* Michael-Anthony Norman 620078776
+* Extra Features added: Animations & Transitions
+*/
 var blankPos = [3,3];
-var spaces = [];
 var base;
+
 
 function main(){
 	var i = 0;
@@ -12,33 +16,22 @@ function main(){
 		base = $("#puzzlearea>div:first-child").position();
 		x = base.left+(98*i);
 		y = base.top+(98*j);
+		
 		$(this).css({
 			"top": y,
-			"left": x
+			"left": x,
+			"background-position-x":-x,
+			"background-position-y":-y
 		});
 		if(i<3){
 			i++;
 		}else{
 			i=0;	
 			j++;
-		}
-		$(this).css({
-			"background-position-x":0-x,
-			"background-position-y":+0-y
-		});
-		//console.log(getSpace($(this)));
-	});	
-	defSpaces();	
+		}	
+	});
 	$("#shufflebutton").on("click",shuffle);	
 	setMovable();
-}
-
-function defSpaces(){
-	for(var i = 0;i < 4;i++){
-		for(var j = 0;j < 4;j++){
-			spaces.push([i,j]);
-		}
-	}
 }
 
 function randSwap(){
@@ -47,30 +40,32 @@ function randSwap(){
 		a.push($(this));
 	});
 	var i = Math.floor(Math.random()*a.length);
-	var newPos = blankPos;
-	blankPos = getSpace(a[i]);
-	move(a[i],newPos);		
+	var shift = [blankPos[0]-getSpace(a[i])[0],blankPos[1]-getSpace(a[i])[1]];
+	blankPos = getSpace(a[i]);	
+	move(a[i],blankPos,shift);	
+	setMovable();
 }
 
 function shuffle(){
-	var x = Math.floor(Math.random()*128);
-	for(var i=16;i<x;i++){
+	var x = Math.floor(Math.random()*96);
+	for(var i=1;i<x;i++){
 		randSwap();
 	}
-	//randSwap();
+	return x;
 }
 
 function setMovable(){
-	$(".puzzlepiece").each(function(){
+	$(".movablepiece").each(function(){
+		$(this).removeClass("movablepiece");
+	});
+	$(".puzzlepiece").each(function(){		
 		$(this).off();
-		if($(this).hasClass("movablepiece")){
-			$(this).removeClass("movablepiece");		
-		}
-		if(isBeside(getSpace($(this)),blankPos)){
+		if(isAdjacent(getSpace($(this)),blankPos)){
 			$(this).addClass("movablepiece");
 			$(this).on("click",movePiece);
 		}		
-	})
+	});
+	console.log("run");
 }
 
 function getSpace(el){
@@ -80,7 +75,7 @@ function getSpace(el){
 	return [x,y];
 }
 
-function isBeside(a,b){
+function isAdjacent(a,b){
 	if(a[0]===b[0]){
 		return a[1]+1===b[1] || a[1]-1===b[1];
 	}else if(a[1]===b[1]){
@@ -91,26 +86,32 @@ function isBeside(a,b){
 }
 
 function movePiece(){
-	var newPos = blankPos;
-	blankPos = getSpace($(this));
-	move($(this),newPos);
-	//setMovable();
+	var shift = [blankPos[0]-getSpace($(this))[0],blankPos[1]-getSpace($(this))[1]];
+	
+	if(shift.toString()==="1,1" || shift.toString()==="-1,-1" || shift.toString()==="-1,1" || shift.toString()==="1,-1"){
+		setMovable();
+	}else{
+		blankPos = getSpace($(this));
+		move($(this),blankPos,shift);
+		setMovable();
+	}	
 }
 
-function move(a,space){
+function move(a,current,shift){
 	if(a.hasClass("movablepiece")){
-		var x = base.left+(98*space[0]);
-		var y = base.top+(98*space[1]);
+		var x = base.left+(98*(current[0]+shift[0]));
+		var y = base.top+(98*(current[1]+shift[1]));
+		
 		a.animate({
-			top: y,
-			left: x
-		});
+			"top": y,
+			"left": x
+		}); 
 		a.css({
 			"top": y,
 			"left": x
 		});
-		setMovable();
-	}	
+	}
+	return setMovable();
 }
 
 $(document).ready(main);
